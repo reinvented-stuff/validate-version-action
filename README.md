@@ -37,12 +37,7 @@ jobs:
         with:
           version_filename: ".version"
           github_token: "${{secrets.GITHUB_TOKEN}}"
-
-      - name: Fail if version already exists
-        id: fail_on_duplicate_version
-        if: steps.validate_new_version.outputs.can_create != 'true'
-        run: exit 2
-
+          fail_on_error: true
 ...
 
 ```
