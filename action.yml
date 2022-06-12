@@ -7,7 +7,7 @@ description: Sends notification via REST Gateway
 
 inputs:
   github_token:
-    description: 'Pass the ${{secrets.GITHUB_TOKEN}}'
+    description: 'Pass the secrets.GITHUB_TOKEN variable'
     type: string
     required: true
 
