@@ -1,8 +1,8 @@
 ---
 # yamllint disable rule:line-length
 
-name: Notification
-description: Sends notification via REST Gateway
+name: Validate planned version
+description: Makes sure version tag can be created
 
 
 inputs:

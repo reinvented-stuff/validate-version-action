@@ -173,7 +173,7 @@ jobs:
           prerelease: false
 
 
-      - name: Use latest released action
+      - name: Send out notification about release
         uses: rest-gateway/notification-action@master
         with:
           message: "Release ${{env.PLANNED_VERSION}} happened for <b>${{env.APP_NAME}}</b>. Yay."
