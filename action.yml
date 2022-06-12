@@ -130,9 +130,7 @@ runs:
 
 
     - name: Fail if version file content is empty
-      if: >-
-        inputs.fail_on_error == true &&
-        steps.planned_version.outputs.planned_version == ""
+      if: inputs.fail_on_error == true
       id: fail_can_create
       shell: bash
       run: |
