@@ -16,11 +16,20 @@ inputs:
     type: string
     default: '.version'
 
+  fail_on_error:
+    description: 'Fail the pipeline on error'
+    type: boolean
+    default: false
+
 
 outputs:
   planned_version:
     description: "Version that is planned to be released"
     value: ${{ steps.planned_version.outputs.planned_version }}
+
+  version_file_exists:
+    description: "True if the version file exists"
+    value: ${{ steps.version_file_exists.outputs.version_file_exists }}
 
   tag_hash:
     description: "Commit hash if version tag exists"
@@ -51,7 +60,7 @@ runs:
         echo "::set-output name=branch_name::${GITHUB_REF#refs/heads/}"
 
 
-    - name: Check if .version file exists
+    - name: Check if version file exists
       id: version_file_exists
       shell: bash
       run: |
@@ -62,18 +71,32 @@ runs:
         fi
 
 
-    - name: Read out .version file
-      if: steps.version_file_exists.outputs.version_file_exists == 'true'
+    - name: Fail if version file doesn't exist
+      if: >-
+        inputs.fail_on_error == true &&
+        steps.version_file_exists.outputs.version_file_exists == false
+      id: fail_version_file_exists
+      shell: bash
+      run: |
+        echo "Version file doesn't exist: '${{inputs.version_filename}}'"
+        exit 2
+
+
+    - name: Read out version file
       id: planned_version
       shell: bash
       run: echo "::set-output name=planned_version::$(cat "${{inputs.version_filename}}")"
 
 
-    - name: Display planned version
-      id: display_planned_version
+    - name: Fail if version file content is empty
+      if: >-
+        inputs.fail_on_error == true &&
+        steps.planned_version.outputs.planned_version == ""
+      id: fail_planned_version
       shell: bash
       run: |
-        echo "::debug::Planned version: ${{steps.planned_version.outputs.planned_version}}"
+        echo "Version file '${{inputs.version_filename}}' empty!"
+        exit 3
 
 
     - name: Lookup planned tag
@@ -93,5 +116,28 @@ runs:
         echo "::set-output name=tag_exists::false"
         echo "::set-output name=can_create::true"
 
+
+    - name: Display all outputs
+      id: display_planned_version
+      shell: bash
+      run: |
+        echo "::debug::planned_version: ${{ steps.planned_version.outputs.planned_version }}"
+        echo "::debug::version_file_exists: ${{ steps.version_file_exists.outputs.version_file_exists }}"
+        echo "::debug::tag_hash: ${{ steps.lookup_tag.outputs.tag_hash }}"
+        echo "::debug::can_create: ${{ steps.can_create.outputs.can_create }}"
+        echo "::debug::tag_exists: ${{ steps.can_create.outputs.tag_exists }}"
+        echo "::debug::branch_name: ${{ steps.get_branch_name.outputs.branch_name }}"
+
+
+    - name: Fail if version file content is empty
+      if: >-
+        inputs.fail_on_error == true &&
+        steps.planned_version.outputs.planned_version == ""
+      id: fail_can_create
+      shell: bash
+      run: |
+        echo "Can't create version tag '${{ steps.planned_version.outputs.planned_version }}'"
+        echo "Version tag already exists: '${{ steps.can_create.outputs.tag_exists }}'"
+        exit 4
 
 ...
