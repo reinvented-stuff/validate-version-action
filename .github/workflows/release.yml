@@ -26,6 +26,7 @@ jobs:
         uses: reinvented-stuff/validate-version-action@master
         with:
           version_filename: ".version"
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Fail if version already exists
         id: fail_on_duplicate_version

@@ -6,6 +6,11 @@ description: Sends notification via REST Gateway
 
 
 inputs:
+  github_token:
+    description: 'Pass the ${{secrets.GITHUB_TOKEN}}'
+    type: string
+    required: true
+
   version_filename:
     description: 'Path to the file with application version'
     type: string
@@ -75,8 +80,8 @@ runs:
       id: lookup_tag
       shell: bash
       run: |
-        URL="https://api.github.com/repos/${{github.repository}}/git/refs/tags/${{steps.planned_version.outputs.planned_version}}"
-        TAG_HASH=$( curl -s -X GET -H 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' --url "${URL}" | jq .object.sha )
+        URL="https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ steps.planned_version.outputs.planned_version }}"
+        TAG_HASH=$( curl -s -X GET -H 'authorization: Bearer ${{ inputs.github_token }}' --url "${URL}" | jq .object.sha )
         echo "::set-output name=tag_hash::${TAG_HASH}"
 
 
