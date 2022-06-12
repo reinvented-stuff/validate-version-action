@@ -26,6 +26,11 @@ jobs:
 
     steps:
 
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Use latest released action
         id: validate_new_version
         uses: reinvented-stuff/validate-version-action@master
