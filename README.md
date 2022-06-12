@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       planned_version: ${{ steps.validate_new_version.outputs.planned_version }}
+      version_file_exists: ${{ steps.validate_new_version.outputs.version_file_exists }}
       tag_hash: ${{ steps.validate_new_version.outputs.tag_hash }}
       can_create: ${{ steps.validate_new_version.outputs.can_create }}
       tag_exists: ${{ steps.validate_new_version.outputs.tag_exists }}
