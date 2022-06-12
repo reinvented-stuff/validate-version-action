@@ -48,6 +48,7 @@ runs:
 
     - name: Check if .version file exists
       id: version_file_exists
+      shell: bash
       run: |
         if [[ -f "${{inputs.version_filename}}" ]]; then
           echo "::set-output name=version_file_exists::true"
@@ -59,17 +60,20 @@ runs:
     - name: Read out .version file
       if: steps.version_file_exists.outputs.version_file_exists == 'true'
       id: planned_version
+      shell: bash
       run: echo "::set-output name=planned_version::$(cat "${{inputs.version_filename}}")"
 
 
     - name: Display planned version
       id: display_planned_version
+      shell: bash
       run: |
         echo "::debug::Planned version: ${{steps.planned_version.outputs.planned_version}}"
 
 
     - name: Lookup planned tag
       id: lookup_tag
+      shell: bash
       run: |
         URL="https://api.github.com/repos/${{github.repository}}/git/refs/tags/${{steps.planned_version.outputs.planned_version}}"
         TAG_HASH=$( curl -s -X GET -H 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' --url "${URL}" | jq .object.sha )
@@ -77,8 +81,9 @@ runs:
 
 
     - name: Define if can create a new version
-      id: can_create
       if: steps.lookup_tag.outputs.tag_hash == 'null'
+      id: can_create
+      shell: bash
       run: |
         echo "::set-output name=tag_exists::false"
         echo "::set-output name=can_create::true"
