@@ -2,6 +2,24 @@
 
 checks if version tag exists
 
+# Usage
+
+
+## Inputs
+
+* `version_filename` (default: '.version') - Path to the file with application version
+* `github_token` - Pass the secrets.GITHUB_TOKEN variable
+* `fail_on_error` (default: 'false') - Fail the pipeline on version validation error
+
+## Outputs
+
+* `planned_version`: `${{ steps.validate_new_version.outputs.planned_version }}` - Version from version file
+* `version_file_exists`: `${{ steps.validate_new_version.outputs.version_file_exists }}` - False if version file doesn't exist
+* `tag_hash`: `${{ steps.validate_new_version.outputs.tag_hash }}` - Commit hash if version tag exists
+* `can_create`: `${{ steps.validate_new_version.outputs.can_create }}` - True if version tag can be created
+* `tag_exists`: `${{ steps.validate_new_version.outputs.tag_exists }}` - True if version tag already exists
+* `branch_name`: `${{ steps.validate_new_version.outputs.branch_name }}` - Working branch name
+
 # Example
 
 ```yaml
