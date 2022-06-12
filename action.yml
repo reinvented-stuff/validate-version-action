@@ -1,0 +1,87 @@
+---
+# yamllint disable rule:line-length
+
+name: Notification
+description: Sends notification via REST Gateway
+
+
+inputs:
+  version_filename:
+    description: 'Path to the file with application version'
+    type: string
+    default: '.version'
+
+
+outputs:
+  planned_version:
+    description: "Version that is planned to be released"
+    value: ${{ steps.planned_version.outputs.planned_version }}
+
+  tag_hash:
+    description: "Commit hash if version tag exists"
+    value: ${{ steps.lookup_tag.outputs.tag_hash }}
+
+  can_create:
+    description: "True if version tag can be created"
+    value: ${{ steps.can_create.outputs.can_create }}
+
+  tag_exists:
+    description: "True if version tag already exists"
+    value: ${{ steps.can_create.outputs.tag_exists }}
+
+  branch_name:
+    description: "Working branch name"
+    value: ${{ steps.get_branch_name.outputs.branch_name }}
+
+
+runs:
+  using: "composite"
+  steps:
+
+
+    - name: Get trigger branch name
+      id: get_branch_name
+      shell: bash
+      run: |
+        echo "::set-output name=branch_name::${GITHUB_REF#refs/heads/}"
+
+
+    - name: Check if .version file exists
+      id: version_file_exists
+      run: |
+        if [[ -f "${{inputs.version_filename}}" ]]; then
+          echo "::set-output name=version_file_exists::true"
+        else
+          echo "::set-output name=version_file_exists::false"
+        fi
+
+
+    - name: Read out .version file
+      if: steps.version_file_exists.outputs.version_file_exists == 'true'
+      id: planned_version
+      run: echo "::set-output name=planned_version::$(cat "${{inputs.version_filename}}")"
+
+
+    - name: Display planned version
+      id: display_planned_version
+      run: |
+        echo "::debug::Planned version: ${{steps.planned_version.outputs.planned_version}}"
+
+
+    - name: Lookup planned tag
+      id: lookup_tag
+      run: |
+        URL="https://api.github.com/repos/${{github.repository}}/git/refs/tags/${{steps.planned_version.outputs.planned_version}}"
+        TAG_HASH=$( curl -s -X GET -H 'authorization: Bearer ${{secrets.GITHUB_TOKEN}}' --url "${URL}" | jq .object.sha )
+        echo "::set-output name=tag_hash::${TAG_HASH}"
+
+
+    - name: Define if can create a new version
+      id: can_create
+      if: steps.lookup_tag.outputs.tag_hash == 'null'
+      run: |
+        echo "::set-output name=tag_exists::false"
+        echo "::set-output name=can_create::true"
+
+
+...
