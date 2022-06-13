@@ -13,12 +13,12 @@ checks if version tag exists
 
 ## Outputs
 
-* `${{ steps.validate_new_version.outputs.planned_version }}` - Version from version file
-* `${{ steps.validate_new_version.outputs.version_file_exists }}` - False if version file doesn't exist
-* `${{ steps.validate_new_version.outputs.tag_hash }}` - Commit hash if version tag exists
-* `${{ steps.validate_new_version.outputs.can_create }}` - True if version tag can be created
-* `${{ steps.validate_new_version.outputs.tag_exists }}` - True if version tag already exists
-* `${{ steps.validate_new_version.outputs.branch_name }}` - Working branch name
+* `planned_version` - Version from version file
+* `version_file_exists` - False if version file doesn't exist
+* `tag_hash` - Commit hash if version tag exists
+* `can_create` - True if version tag can be created
+* `tag_exists` - True if version tag already exists
+* `branch_name` - Working branch name
 
 # Example
 
@@ -50,7 +50,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use latest released action
+      - name: Validate new version
         id: validate_new_version
         uses: reinvented-stuff/validate-version-action@master
         with:
