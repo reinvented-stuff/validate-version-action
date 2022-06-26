@@ -134,7 +134,9 @@ runs:
 
 
     - name: Fail if version file content is empty
-      if: inputs.fail_on_error == true
+      if: >-
+        inputs.fail_on_error == true && 
+        steps.can_create.outputs.can_create == false
       id: fail_can_create
       shell: bash
       run: |
