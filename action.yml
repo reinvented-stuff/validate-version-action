@@ -109,12 +109,16 @@ runs:
 
 
     - name: Define if can create a new version
-      if: steps.lookup_tag.outputs.tag_hash == 'null'
       id: can_create
       shell: bash
       run: |
-        echo "::set-output name=tag_exists::false"
-        echo "::set-output name=can_create::true"
+        if [[ "${{ steps.lookup_tag.outputs.tag_hash }}" == "null" ]]; then
+          echo "::set-output name=tag_exists::false"
+          echo "::set-output name=can_create::true"
+        else
+          echo "::set-output name=tag_exists::true"
+          echo "::set-output name=can_create::false"
+        fi
 
 
     - name: Display all outputs
