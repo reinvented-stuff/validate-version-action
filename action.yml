@@ -131,6 +131,7 @@ runs:
         echo "::debug::can_create: ${{ steps.can_create.outputs.can_create }}"
         echo "::debug::tag_exists: ${{ steps.can_create.outputs.tag_exists }}"
         echo "::debug::branch_name: ${{ steps.get_branch_name.outputs.branch_name }}"
+        echo "::debug::fail_on_error: ${{ inputs.fail_on_error }}"
 
 
     - name: Fail if version file content is empty
