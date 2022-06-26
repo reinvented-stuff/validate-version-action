@@ -135,14 +135,15 @@ runs:
 
 
     - name: Fail if version file content is empty
-      if: >-
-        inputs.fail_on_error == true && 
-        steps.can_create.outputs.can_create == false
       id: fail_can_create
       shell: bash
       run: |
-        echo "Can't create version tag '${{ steps.planned_version.outputs.planned_version }}'"
-        echo "Version tag already exists: '${{ steps.can_create.outputs.tag_exists }}'"
-        exit 4
+        if [[ "${{ inputs.fail_on_error }}" == "true" ]]; then
+          if [[ "${{ steps.can_create.outputs.can_create }}" != "true" ]]; then
+            echo "Can't create version tag '${{ steps.planned_version.outputs.planned_version }}'"
+            echo "Version tag already exists: '${{ steps.can_create.outputs.tag_exists }}'"
+            exit 4
+          fi
+        fi
 
 ...

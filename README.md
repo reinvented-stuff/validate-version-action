@@ -52,7 +52,7 @@ jobs:
 
       - name: Validate new version
         id: validate_new_version
-        uses: reinvented-stuff/validate-version-action@1.1.2
+        uses: reinvented-stuff/validate-version-action@1.1.3
         with:
           version_filename: ".version"
           github_token: "${{secrets.GITHUB_TOKEN}}"
