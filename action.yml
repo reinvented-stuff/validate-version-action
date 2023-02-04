@@ -57,7 +57,7 @@ runs:
       id: get_branch_name
       shell: bash
       run: |
-        echo "::set-output name=branch_name::${GITHUB_REF#refs/heads/}"
+        echo "branch_name=${GITHUB_REF#refs/heads/}" >> "${GITHUB_OUTPUT}"
 
 
     - name: Check if version file exists
@@ -65,9 +65,9 @@ runs:
       shell: bash
       run: |
         if [[ -f "${{inputs.version_filename}}" ]]; then
-          echo "::set-output name=version_file_exists::true"
+          echo "version_file_exists=true" >> "${GITHUB_OUTPUT}"
         else
-          echo "::set-output name=version_file_exists::false"
+          echo "version_file_exists=false" >> "${GITHUB_OUTPUT}"
         fi
 
 
@@ -85,7 +85,7 @@ runs:
     - name: Read out version file
       id: planned_version
       shell: bash
-      run: echo "::set-output name=planned_version::$(cat "${{inputs.version_filename}}")"
+      run: planned_version=$(cat "${{inputs.version_filename}}")" >> "${GITHUB_OUTPUT}"
 
 
     - name: Fail if version file content is empty
@@ -105,7 +105,7 @@ runs:
       run: |
         URL="https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ steps.planned_version.outputs.planned_version }}"
         TAG_HASH=$( curl -s -X GET -H 'authorization: Bearer ${{ inputs.github_token }}' --url "${URL}" | jq .object.sha )
-        echo "::set-output name=tag_hash::${TAG_HASH}"
+        echo "tag_hash=${TAG_HASH}" >> "${GITHUB_OUTPUT}"
 
 
     - name: Define if can create a new version
@@ -113,11 +113,11 @@ runs:
       shell: bash
       run: |
         if [[ "${{ steps.lookup_tag.outputs.tag_hash }}" == "null" ]]; then
-          echo "::set-output name=tag_exists::false"
-          echo "::set-output name=can_create::true"
+          echo "tag_exists=false" >> "${GITHUB_OUTPUT}"
+          echo "can_create=true" >> "${GITHUB_OUTPUT}"
         else
-          echo "::set-output name=tag_exists::true"
-          echo "::set-output name=can_create::false"
+          echo "tag_exists=true" >> "${GITHUB_OUTPUT}"
+          echo "can_create=false" >> "${GITHUB_OUTPUT}"
         fi
 
 
@@ -134,7 +134,7 @@ runs:
         echo "::debug::fail_on_error: ${{ inputs.fail_on_error }}"
 
 
-    - name: Fail if version file content is empty
+    - name: Fail if can't create a version
       id: fail_can_create
       shell: bash
       run: |

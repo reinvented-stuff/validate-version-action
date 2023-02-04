@@ -4,6 +4,9 @@ checks if version tag exists
 
 # Usage
 
+1. Store the version you need to validate in a file (eg. `.version`)
+2. Trigger `validate-version-action` and pass all required inputs
+3. Read out values from the outputs
 
 ## Inputs
 
@@ -21,6 +24,10 @@ checks if version tag exists
 * `branch_name` - Working branch name
 
 # Example
+
+```bash
+echo "1.0.0" > "${REPO_ROOT}/.version"
+```
 
 ```yaml
 ---
@@ -52,7 +59,7 @@ jobs:
 
       - name: Validate new version
         id: validate_new_version
-        uses: reinvented-stuff/validate-version-action@1.1.3
+        uses: reinvented-stuff/validate-version-action@1.1.4
         with:
           version_filename: ".version"
           github_token: "${{secrets.GITHUB_TOKEN}}"
