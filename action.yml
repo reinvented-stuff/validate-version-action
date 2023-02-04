@@ -85,7 +85,7 @@ runs:
     - name: Read out version file
       id: planned_version
       shell: bash
-      run: planned_version=$(cat "${{inputs.version_filename}}")" >> "${GITHUB_OUTPUT}"
+      run: echo "planned_version=$(cat "${{inputs.version_filename}}")" >> "${GITHUB_OUTPUT}"
 
 
     - name: Fail if version file content is empty
